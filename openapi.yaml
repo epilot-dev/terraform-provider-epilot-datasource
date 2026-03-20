@@ -1,0 +1,800 @@
+openapi: 3.0.0
+info:
+  title: 360-native-journeys API
+  description: API to configure 360-native-journeys
+  version: 1.0.0
+security:
+  - EpilotAuth: []
+  - PortalAuth: []
+tags:
+  - name: 360-native-journeys
+    description: 360-native-journeys operations
+servers:
+  - url: https://epilot360-native-journeys.sls.epilot.io
+x-tagGroups:
+  - name: APIs
+    tags:
+      - 360-native-journeys
+
+paths:
+  "/v1/journey/{journeyId}/datasources":
+    get:
+      operationId: getJourneyDatasources
+      summary: getJourneyDatasources
+      description: Get the datasources for a journey
+      parameters:
+        - name: journeyId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "123e4567-e89b-12d3-a456-426614174000"
+            description: The ID of the journey
+      tags:
+        - 360-native-journeys
+
+      security:
+        - EpilotAuth: []
+        - PortalAuth: []
+      responses:
+        200:
+          description: The datasources have been retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/Datasource"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: datasource not found
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unknown API Error
+
+    post:
+      operationId: createOrUpdateJourneyDatasource
+      summary: createOrUpdateJourneyDatasource
+      description: Create a new or update an existing datasource for a journey
+      parameters:
+        - name: journeyId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "123e4567-e89b-12d3-a456-426614174000"
+            description: The ID of the journey
+      tags:
+        - 360-native-journeys
+
+      security:
+        - EpilotAuth: []
+        - PortalAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Datasource"
+      responses:
+        200:
+          description: The datasource has been created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Datasource"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: datasource not found
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unknown API Error
+    delete:
+      operationId: deleteJourneyDatasourceById
+      summary: deleteJourneyDatasourceById
+      description: Delete a datasource for a journey
+      parameters:
+        - name: journeyId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "123e4567-e89b-12d3-a456-426614174000"
+            description: The ID of the journey
+      tags:
+        - 360-native-journeys
+      security:
+        - EpilotAuth: []
+        - PortalAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                  description: ID of the datasource
+                  example: "123e4567-e89b-12d3-a456-426614174000"
+              required:
+                - id
+      responses:
+        200:
+          description: The datasource has been deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: datasource deleted successfully
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: datasource not found
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unknown API Error
+  "/v1/journey/{journeyId}/datasources/{datasourceId}/schemas":
+    get:
+      operationId: getDatasourceSchemas
+      summary: getDatasourceSchemas
+      description: Get the schemas for a datasource
+      parameters:
+        - name: journeyId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "123e4567-e89b-12d3-a456-426614174000"
+            description: The ID of the journey
+        - name: datasourceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "123e4567-e89b-12d3-a456-426614174000"
+            description: The ID of the datasource
+      tags:
+        - 360-native-journeys
+      security:
+        - EpilotAuth: []
+        - PortalAuth: []
+      responses:
+        200:
+          description: The schemas have been retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/DatasourceSchema"
+        400: 
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Bad Request
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Forbidden
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: datasource not found
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unknown API Error
+
+  "/v1/journey/entity:search":
+    post:
+      operationId: searchJourneyEntities
+      summary: searchJourneyEntities
+      description: Search all entities of a journey
+      tags:
+        - 360-native-journeys
+
+      security:
+        - EpilotAuth: []
+        - PortalAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EntitySearchParams"
+      responses:
+        200:
+          description: The entities have been retrieved successfully for the portal user.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/EntityResponseWithHits"
+                  - $ref: "#/components/schemas/EntityResponseGroupedWithHits"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: entity not found
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unknown API Error
+
+# Components
+components:
+  schemas:
+    EntityId:
+      type: string
+      format: uuid
+      description: Entity ID
+      example: "5da0a718-c822-403d-9f5d-20d4584e0528"
+    EntitySlug:
+      type: string
+      description: Entity schema identifier
+      example: "customer"
+    BaseEntity:
+      type: object
+      properties:
+        _id:
+          $ref: "#/components/schemas/EntityId"
+          description: Entity ID
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        _title:
+          type: string
+          description: Title of the entity
+          example: "Example Entity"
+        _org:
+          type: string
+          description: Organization ID the entity belongs to
+          example: "123"
+        _tags:
+          type: array
+          items:
+            type: string
+          description: Array of entity tags
+          example: ["example", "mock"]
+        _created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp of the entity
+          example: "2021-02-09T12:41:43.662Z"
+        _updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp of the entity
+          example: "2021-02-09T12:41:43.662Z"
+      required:
+        - _id
+        - _title
+        - _org
+        - _created_at
+        - _updated_at
+    Entity:
+      type: object
+      properties: {}
+      additionalProperties: true
+    EntityTemplates:
+      type: object
+      properties:
+        templates_output:
+          type: object
+          description: Resolved template strings corresponding to the templates parameter
+          additionalProperties:
+            type: string
+          example:
+            content_top_name: "Customer #123456"
+            main_content_name: "Orange Flexible A2 (654321)"
+            content_bottom_name: "Porscheplatz 1, 70435 Stuttgart, Germany"
+    EntityItem:
+      allOf:
+        - $ref: "#/components/schemas/BaseEntity"
+        - $ref: "#/components/schemas/Entity"
+        - $ref: "#/components/schemas/EntityTemplates"
+        - type: object
+          required:
+            - _schema
+          properties:
+            _schema:
+              $ref: "#/components/schemas/EntitySlug"
+              description: Entity schema identifier
+    FilterOperator:
+      type: string
+      enum:
+        - equal
+        - not-equal
+        - greater-than
+        - greater-than-or-equal
+        - less-than 
+        - less-than-or-equal
+        - contains
+        - in
+        - notIn
+      description: Filter operator
+    FilterCondition:
+      type: object
+      properties:
+        field:
+          type: string
+          description: Field name to filter on
+          example: "status"
+        operator:
+          $ref: "#/components/schemas/FilterOperator"
+        value:
+          oneOf:
+            - type: string
+            - type: number
+            - type: array
+              items:
+                type: string
+            - type: array
+              items:
+                type: number
+          description: Filter value (string, number, array of strings, or array of numbers). Arrays are used with 'in' and 'notIn' operators.
+          example: "active"
+      required:
+        - field
+        - operator
+        - value
+    Filters:
+      type: array
+      description: |
+        An array of filter groups which will be resolved with OR operator.
+
+        Example:
+          [[filter1, filter2], [filter3]] => (filter1 AND filter2) OR (filter3)
+      items:
+        type: array
+        description: | 
+          An array of filters which will be resolved with AND operator
+          Example:
+            [filter1, filter2] => filter1 AND filter2
+        items: 
+          oneOf:
+            - type: string
+              format: uuid
+              description: Target ID (UUID) that will be resolved to a filter query
+            - $ref: "#/components/schemas/FilterCondition"
+    SearchParams:
+      type: object
+      properties:
+        fields:
+          type: array
+          items:
+            type: string
+          description: List of fields to search in
+          example:
+            - _title
+            - customer._title
+        query:
+          type: string
+          description: Search query string
+          example: "contract"
+      required:
+        - fields
+    GroupParams:
+      type: object
+      properties:
+        by:
+          type: string
+          description: Field to group results by
+          example: "customer._title"
+      required:
+        - by
+    EntitySearchParams:
+      type: object
+      properties:
+        source:
+          type: string
+          description: Source identifier for the search
+          example: "journey"
+        fields:
+          type: array
+          items:
+            type: string
+          description: List of entity fields to include in search results
+          example:
+            - _id
+            - _title
+        filters:
+          $ref: "#/components/schemas/Filters"
+          example:
+            - ["3ec28ab5-8598-41ef-9486-b57fca1d5e2a"]
+            - [{ field: "status", operator: "equal", value: "active" }]
+            - [{ field: "_title", operator: "equal", value: "433 - POLO" }]
+        search:
+          $ref: "#/components/schemas/SearchParams"
+        group:
+          $ref: "#/components/schemas/GroupParams"
+        pagination:
+          type: object
+          description: Pagination control for the search API
+          required:
+            - page
+          properties:
+            size:
+              type: number
+              description: Number of entities per page
+              example: 5
+              maximum: 20
+            page:
+              type: integer
+              minimum: 1
+              description: Page number for pagination
+              example: 1
+      required:
+        - source
+        - fields
+        - pagination
+    EntityResponseWithHits:
+      type: object
+      description: Response for entity search requests
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/EntityItem"
+        pagination:
+          type: object
+          description: Pagination metadata
+          properties:
+            from:
+              type: number
+              description: Starting offset for the current page
+              example: 0
+            size:
+              type: number
+              description: Number of entities per page
+              example: 10
+            total:
+              type: number
+              description: Total number of entities available
+              example: 50
+            has_more:
+              type: boolean
+              description: Whether there are more entities available beyond the current page
+        hits:
+          type: number
+          description: Number of entities returned in this response
+          example: 10
+    EntityResponseGroupedWithHits:
+      type: object
+      description: Response for entity search requests, but with groupings
+      properties:
+        groups:
+          type: array
+          items:
+            type: object
+            properties:
+              group:
+                type: string
+                description: Group title
+                example: "active"
+              group_title:
+                type: string
+                description: Resolved group title from variable
+                example: "Account #987654321"
+              count:
+                type: number
+                description: Total number of entities in this group
+                example: 10
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EntityItem"
+              pagination:
+                type: object
+                description: Pagination metadata for entities within this group
+                properties:
+                  from:
+                    type: number
+                    description: Starting offset for entities in this group
+                    example: 0
+                  size:
+                    type: number
+                    description: Number of entities returned for this group
+                    example: 5
+                  total:
+                    type: number
+                    description: Total number of entities available in this group
+                    example: 10
+                  has_more:
+                    type: boolean
+                    description: Whether there are more entities available in this group beyond the current page
+        groups_pagination:
+          type: object
+          description: Group pagination metadata
+          properties:
+            has_more:
+              type: boolean
+              description: Whether there are more groups available
+            after_key:
+              type: object
+              description: Composite aggregation key for the next page
+              additionalProperties:
+                type: string
+        hits:
+          type: number
+          description: Number of groups returned in this response
+          example: 5
+    
+    # Datasource schema
+    Datasource:
+      required:
+        - name
+        - source
+        - fields
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the datasource
+          example: "Active Contracts"
+        id:
+          type: string
+          description: ID of the datasource
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        source:
+          type: string
+          description: Source identifier for the search
+          example: "contract"
+        fields:
+          type: array
+          items:
+            type: string
+          description: List of entity fields to include in search results
+          example:
+            - _id
+            - _title
+            - contract_number
+        filters:
+          type: array
+          items:
+            type: array
+            items: 
+              $ref: "#/components/schemas/DatasourceFilter"
+        search:
+          $ref: "#/components/schemas/SearchParams"
+        group:
+          $ref: "#/components/schemas/GroupParams"      
+
+    DatasourceFilter:
+      oneOf:
+        - $ref: "#/components/schemas/ClassicDatasourceFilter"
+        - $ref: "#/components/schemas/TargetDatasourceFilter"
+    TargetDatasourceFilter:
+      required:
+        - targetId
+      type: object
+      properties:
+        id: 
+          type: string
+          format: uuid
+          description: ID of the filter
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        targetId:
+          type: string
+          description: Target ID
+          example: "123e4567-e89b-12d3-a456-426614174000"
+    ClassicDatasourceFilter:
+      required:
+        - field
+        - operator
+        - comparisonValue
+      type: object
+      properties:
+        id: 
+          type: string
+          description: ID of the filter
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        field:
+          type: string
+          description: Field name to filter on
+          example: "status"
+        operator:
+          $ref: "#/components/schemas/FilterOperator"
+        comparisonValue:
+          oneOf:
+            - $ref: "#/components/schemas/ConstantValue"
+            - $ref: "#/components/schemas/BlockValue"
+            - $ref: "#/components/schemas/VariableValue"
+            - $ref: "#/components/schemas/ContextValue"
+    
+    ConstantValue:
+      type: object
+      required:
+        - type
+        - value
+      properties:
+        type:
+          type: string
+          enum:
+            - constant
+        value:
+          type: string
+          description: Constant value
+        previewWith:
+          type: string
+          description: Preview with value
+          example: "John Doe"
+
+    BlockValue:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - block
+        blockId:
+          type: string
+          description: Block ID
+        path:
+          type: string
+          description: Path to the block
+          example: "zipCode"
+        previewWith:
+          type: string
+          description: Preview with value
+          example: "80807"
+    
+    VariableValue:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - variable
+        variable:
+          type: string
+          description: Variable name
+          example: "customerId"
+        previewWith:
+          type: string
+          description: Preview with value
+          example: "356654ea-6fa8-4b45-bd82-332f913f3264"
+    
+    ContextValue:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - context
+        contextParameterId:
+          type: string
+          description: Context parameter ID
+          example: "123654ea-6fa8-4b45-bd82-332f913f3783"
+        previewWith:
+          type: string
+          description: Preview with value
+          example: "John Doe"
+
+    DatasourceSchema:
+      type: object
+      required:
+        - root
+        - relationSchemas
+      properties:
+        root:
+          $ref: "#/components/schemas/SchemaDefinition"
+        relationSchemas:
+          type: object
+          description: Map of relation schema slugs to their schema definitions
+          additionalProperties:
+            $ref: "#/components/schemas/SchemaDefinition"
+          example:
+            contact:
+              slug: "contact"
+              attributes: []
+            account:
+              slug: "account"
+              attributes: []
+
+    SchemaDefinition:
+      type: object
+      required:
+        - slug
+        - attributes
+      properties:
+        slug:
+          type: string
+          description: Schema slug identifier
+          example: "billing_account"
+        attributes:
+          type: array
+          items:
+            $ref: "https://docs.api.epilot.io/entity.yaml#/components/schemas/Attribute"
+
+  securitySchemes:
+    EpilotAuth:
+      type: http
+      scheme: bearer
+      description: Epilot Authorization Bearer Token - public access token / user token
+      bearerFormat: JWT
+    PortalAuth:
+      type: http
+      scheme: bearer
+      description: Authorization header with customer portal OAuth2 bearer token
+      bearerFormat: JWT
