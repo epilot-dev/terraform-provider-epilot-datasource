@@ -180,6 +180,60 @@ paths:
                   message:
                     type: string
                     example: Unknown API Error
+  "/v1/journey/{journeyId}/datasources/{datasourceId}":
+    get:
+      operationId: getJourneyDatasourceById
+      summary: getJourneyDatasourceById
+      description: Get a specific datasource for a journey by its ID
+      parameters:
+        - name: journeyId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "123e4567-e89b-12d3-a456-426614174000"
+            description: The ID of the journey
+        - name: datasourceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "123e4567-e89b-12d3-a456-426614174000"
+            description: The ID of the datasource
+      tags:
+        - 360-native-journeys
+      security:
+        - EpilotAuth: []
+        - PortalAuth: []
+      responses:
+        200:
+          description: The datasource has been retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Datasource"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: datasource not found
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unknown API Error
   "/v1/journey/{journeyId}/datasources/{datasourceId}/schemas":
     get:
       operationId: getDatasourceSchemas

@@ -5,12 +5,12 @@ management:
   docVersion: 1.0.0
   speakeasyVersion: 1.758.0
   generationVersion: 2.866.2
-  releaseVersion: 0.30.3
-  configChecksum: 3521d2c5e3cb536a2a1c7c9c87e35fe3
+  releaseVersion: 0.30.4
+  configChecksum: 72264ec20e73b6273ee3df8b87acc5fa
 persistentEdits:
-  generation_id: 7423d01a-bf5d-4f92-9299-51b1d42a61b3
-  pristine_commit_hash: e895808e0879c4a2bc54eb6230ec14bb4987ac84
-  pristine_tree_hash: 944208a1674763afa0b9ff2278fc483efae2e9a4
+  generation_id: 44181b77-865d-477c-bb9a-cb1b276591b5
+  pristine_commit_hash: db7dbfcf053353a2dc9824a90ec7b85ecc4e4f8a
+  pristine_tree_hash: d4139ad0b2d1ff16a03186f2625b61781975aa62
 features:
   terraform:
     additionalDependencies: 0.1.0
@@ -33,8 +33,8 @@ trackedFiles:
     pristine_git_object: 8e707bb129af1da185ba30b4c289b0160819c437
   examples/provider/provider.tf:
     id: 954e955c0240
-    last_write_checksum: sha1:85ce0845adbc4abb3044ca72660fe49ff7247f06
-    pristine_git_object: bb039816220e6e179c8a661676d2f1ded5cac573
+    last_write_checksum: sha1:8348cb5ea640c82e70e0bd1529c952c5505b136a
+    pristine_git_object: 75cf263bd0a699b744980dc242865ca9719869f7
   examples/resources/epilot-datasource_datasource/resource.tf:
     id: fa47c9ce2f80
     last_write_checksum: sha1:b2ba44533e7d96826446a7337fcec6077ab4e7aa
@@ -649,8 +649,8 @@ trackedFiles:
     pristine_git_object: 5b3dc7c122d8ab08905485342d7474f8f163888d
   internal/sdk/sdk.go:
     id: 02d7190ee502
-    last_write_checksum: sha1:245c147c6deb98cdcedbd2c23660c1a47db894a9
-    pristine_git_object: 7cf33d47965ca6cddb82d60842c43f3e242a6fda
+    last_write_checksum: sha1:acc65d5889a2bc56ac16138b03df92772d7a71ab
+    pristine_git_object: a202527e0fe7cb03aefc2559ca4f98221e3c3ab6
   internal/sdk/threehundredandsixtyminusnativejourneys.go:
     id: 9d3653d4af8c
     last_write_checksum: sha1:bfca95624d23e80f5528f270e96140ff6c60681f
