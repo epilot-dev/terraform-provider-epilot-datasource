@@ -197,9 +197,19 @@ type NumberAttribute struct {
 	//
 	ExcludeFromSearch *bool `default:"false" json:"exclude_from_search"`
 	// The attribute is a repeatable
-	Repeatable *bool               `json:"repeatable,omitempty"`
-	HasPrimary *bool               `json:"has_primary,omitempty"`
-	Type       NumberAttributeType `json:"type"`
+	Repeatable *bool `json:"repeatable,omitempty"`
+	HasPrimary *bool `json:"has_primary,omitempty"`
+	// Controls how updates to this attribute are handled. See the `EditMode`
+	// schema for the per-mode semantics. Defaults to `direct`.
+	//
+	EditMode *EditMode `default:"direct" json:"edit_mode"`
+	// Configuration for auto-clear matching on `edit_mode: external` attributes.
+	// `match_strategy` and `fuzzy_config` are only consulted for `external` mode —
+	// they are ignored for `approval` mode, which resolves via explicit
+	// `:apply` / `:dismiss` endpoints and never auto-clears.
+	//
+	EditModeConfig *EditModeConfig     `json:"edit_mode_config,omitempty"`
+	Type           NumberAttributeType `json:"type"`
 	// Optional data type override. When set to 'number', the value is stored as a number instead of a string. Defaults to 'string'.
 	DataType *DataType `default:"string" json:"data_type"`
 	Format   *string   `json:"format,omitempty"`
@@ -433,6 +443,20 @@ func (n *NumberAttribute) GetHasPrimary() *bool {
 		return nil
 	}
 	return n.HasPrimary
+}
+
+func (n *NumberAttribute) GetEditMode() *EditMode {
+	if n == nil {
+		return nil
+	}
+	return n.EditMode
+}
+
+func (n *NumberAttribute) GetEditModeConfig() *EditModeConfig {
+	if n == nil {
+		return nil
+	}
+	return n.EditModeConfig
 }
 
 func (n *NumberAttribute) GetType() NumberAttributeType {

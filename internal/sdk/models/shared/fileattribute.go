@@ -199,10 +199,20 @@ type FileAttribute struct {
 	//
 	ExcludeFromSearch *bool `default:"false" json:"exclude_from_search"`
 	// The attribute is a repeatable
-	Repeatable *bool             `json:"repeatable,omitempty"`
-	HasPrimary *bool             `json:"has_primary,omitempty"`
-	Type       FileAttributeType `json:"type"`
-	Multiple   *bool             `json:"multiple,omitempty"`
+	Repeatable *bool `json:"repeatable,omitempty"`
+	HasPrimary *bool `json:"has_primary,omitempty"`
+	// Controls how updates to this attribute are handled. See the `EditMode`
+	// schema for the per-mode semantics. Defaults to `direct`.
+	//
+	EditMode *EditMode `default:"direct" json:"edit_mode"`
+	// Configuration for auto-clear matching on `edit_mode: external` attributes.
+	// `match_strategy` and `fuzzy_config` are only consulted for `external` mode —
+	// they are ignored for `approval` mode, which resolves via explicit
+	// `:apply` / `:dismiss` endpoints and never auto-clears.
+	//
+	EditModeConfig *EditModeConfig   `json:"edit_mode_config,omitempty"`
+	Type           FileAttributeType `json:"type"`
+	Multiple       *bool             `json:"multiple,omitempty"`
 	// List of file extensions (without the dot suffix)
 	AllowedExtensions []string `json:"allowed_extensions,omitempty"`
 	// Controls how the images are presented to the user during upload on the Entity Details view.
@@ -212,6 +222,8 @@ type FileAttribute struct {
 	//
 	EnableDescription    *bool                 `json:"enable_description,omitempty"`
 	DefaultAccessControl *DefaultAccessControl `json:"default_access_control,omitempty"`
+	// The maximum file size in bytes. Used to derive file_size and file_size_unit in the UI.
+	FileSizeBytes *int64 `json:"file_size_bytes,omitempty"`
 }
 
 func (f FileAttribute) MarshalJSON() ([]byte, error) {
@@ -442,6 +454,20 @@ func (f *FileAttribute) GetHasPrimary() *bool {
 	return f.HasPrimary
 }
 
+func (f *FileAttribute) GetEditMode() *EditMode {
+	if f == nil {
+		return nil
+	}
+	return f.EditMode
+}
+
+func (f *FileAttribute) GetEditModeConfig() *EditModeConfig {
+	if f == nil {
+		return nil
+	}
+	return f.EditModeConfig
+}
+
 func (f *FileAttribute) GetType() FileAttributeType {
 	if f == nil {
 		return FileAttributeType("")
@@ -482,4 +508,11 @@ func (f *FileAttribute) GetDefaultAccessControl() *DefaultAccessControl {
 		return nil
 	}
 	return f.DefaultAccessControl
+}
+
+func (f *FileAttribute) GetFileSizeBytes() *int64 {
+	if f == nil {
+		return nil
+	}
+	return f.FileSizeBytes
 }

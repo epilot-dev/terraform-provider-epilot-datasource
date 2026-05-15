@@ -44,7 +44,7 @@ terraform {
   required_providers {
     epilot-datasource = {
       source  = "epilot-dev/epilot-datasource"
-      version = "0.30.3"
+      version = "0.31.0"
     }
   }
 }
@@ -74,6 +74,10 @@ Available configuration:
 ### Managed Resources
 
 * [epilot-datasource_datasource](docs/resources/datasource.md)
+
+### Data Sources
+
+* [epilot-datasource_datasource](docs/data-sources/datasource.md)
 <!-- End Available Resources and Data Sources [operations] -->
 
 <!-- Start Testing the provider locally [usage] -->

@@ -15,6 +15,7 @@ func (r *DatasourceResourceModel) RefreshFromSharedDatasource(ctx context.Contex
 	var diags diag.Diagnostics
 
 	if resp != nil {
+		r.CompositeID = types.StringPointerValue(resp.CompositeID)
 		r.Fields = make([]types.String, 0, len(resp.Fields))
 		for _, v := range resp.Fields {
 			r.Fields = append(r.Fields, types.StringValue(v))
@@ -90,6 +91,7 @@ func (r *DatasourceResourceModel) RefreshFromSharedDatasource(ctx context.Contex
 			r.Group.By = types.StringValue(resp.Group.By)
 		}
 		r.ID = types.StringPointerValue(resp.ID)
+		r.JourneyID = types.StringPointerValue(resp.JourneyID)
 		r.Name = types.StringValue(resp.Name)
 		if resp.Search == nil {
 			r.Search = nil
@@ -107,38 +109,36 @@ func (r *DatasourceResourceModel) RefreshFromSharedDatasource(ctx context.Contex
 	return diags
 }
 
-func (r *DatasourceResourceModel) ToOperationsCreateOrUpdateJourneyDatasourceRequest(ctx context.Context) (*operations.CreateOrUpdateJourneyDatasourceRequest, diag.Diagnostics) {
+func (r *DatasourceResourceModel) ToOperationsGetJourneyDatasourceByCompositeIDRequest(ctx context.Context) (*operations.GetJourneyDatasourceByCompositeIDRequest, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	var journeyID string
-	journeyID = r.JourneyID.ValueString()
+	var compositeID string
+	compositeID = r.CompositeID.ValueString()
 
-	datasource, datasourceDiags := r.ToSharedDatasource(ctx)
-	diags.Append(datasourceDiags...)
-
-	if diags.HasError() {
-		return nil, diags
-	}
-
-	out := operations.CreateOrUpdateJourneyDatasourceRequest{
-		JourneyID:  journeyID,
-		Datasource: datasource,
+	out := operations.GetJourneyDatasourceByCompositeIDRequest{
+		CompositeID: compositeID,
 	}
 
 	return &out, diags
 }
 
-func (r *DatasourceResourceModel) ToSharedDatasource(ctx context.Context) (*shared.Datasource, diag.Diagnostics) {
+func (r *DatasourceResourceModel) ToSharedDatasourceUpsertRequest(ctx context.Context) (*shared.DatasourceUpsertRequest, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	var name string
 	name = r.Name.ValueString()
 
-	id := new(string)
-	if !r.ID.IsUnknown() && !r.ID.IsNull() {
-		*id = r.ID.ValueString()
+	var id string
+	id = r.ID.ValueString()
+
+	var journeyID string
+	journeyID = r.JourneyID.ValueString()
+
+	compositeID := new(string)
+	if !r.CompositeID.IsUnknown() && !r.CompositeID.IsNull() {
+		*compositeID = r.CompositeID.ValueString()
 	} else {
-		id = nil
+		compositeID = nil
 	}
 	var source string
 	source = r.Source.ValueString()
@@ -343,14 +343,16 @@ func (r *DatasourceResourceModel) ToSharedDatasource(ctx context.Context) (*shar
 			By: by,
 		}
 	}
-	out := shared.Datasource{
-		Name:    name,
-		ID:      id,
-		Source:  source,
-		Fields:  fields,
-		Filters: filters,
-		Search:  search,
-		Group:   group,
+	out := shared.DatasourceUpsertRequest{
+		Name:        name,
+		ID:          id,
+		JourneyID:   journeyID,
+		CompositeID: compositeID,
+		Source:      source,
+		Fields:      fields,
+		Filters:     filters,
+		Search:      search,
+		Group:       group,
 	}
 
 	return &out, diags

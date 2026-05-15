@@ -126,7 +126,9 @@ func (p *EpilotDatasourceProvider) Resources(ctx context.Context) []func() resou
 }
 
 func (p *EpilotDatasourceProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{}
+	return []func() datasource.DataSource{
+		NewDatasourceDataSource,
+	}
 }
 
 func (p *EpilotDatasourceProvider) EphemeralResources(ctx context.Context) []func() ephemeral.EphemeralResource {

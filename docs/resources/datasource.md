@@ -14,6 +14,7 @@ Datasource Resource
 
 ```terraform
 resource "epilot-datasource_datasource" "my_datasource" {
+  composite_id = "123e4567-e89b-12d3-a456-426614174000:123e4567-e89b-12d3-a456-426614174000"
   fields = [
     "_id",
     "_title",
@@ -47,15 +48,16 @@ resource "epilot-datasource_datasource" "my_datasource" {
 ### Required
 
 - `fields` (List of String) List of entity fields to include in search results
-- `journey_id` (String)
+- `id` (String) ID of the datasource
+- `journey_id` (String) Journey ID
 - `name` (String) Name of the datasource
 - `source` (String) Source identifier for the search
 
 ### Optional
 
+- `composite_id` (String) Composite identifier in the form `journeyId:datasourceId`. Returned by GET responses and accepted by endpoints that look up a datasource by composite id.
 - `filters` (List of List of Object)
 - `group` (Attributes) (see [below for nested schema](#nestedatt--group))
-- `id` (String) ID of the datasource
 - `search` (Attributes) (see [below for nested schema](#nestedatt--search))
 
 <a id="nestedatt--group"></a>
@@ -73,3 +75,22 @@ Optional:
 
 - `fields` (List of String) List of fields to search in. Not Null
 - `query` (String) Search query string
+
+## Import
+
+Import is supported using the following syntax:
+
+In Terraform v1.5.0 and later, the [`import` block](https://developer.hashicorp.com/terraform/language/import) can be used with the `id` attribute, for example:
+
+```terraform
+import {
+  to = epilot-datasource_datasource.my_epilot-datasource_datasource
+  id = "123e4567-e89b-12d3-a456-426614174000:123e4567-e89b-12d3-a456-426614174000"
+}
+```
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
+```shell
+terraform import epilot-datasource_datasource.my_epilot-datasource_datasource "123e4567-e89b-12d3-a456-426614174000:123e4567-e89b-12d3-a456-426614174000"
+```

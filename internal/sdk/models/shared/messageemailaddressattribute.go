@@ -170,12 +170,22 @@ type MessageEmailAddressAttribute struct {
 	//
 	ExcludeFromSearch *bool `default:"false" json:"exclude_from_search"`
 	// The attribute is a repeatable
-	Repeatable *bool                            `json:"repeatable,omitempty"`
-	HasPrimary *bool                            `json:"has_primary,omitempty"`
-	Type       MessageEmailAddressAttributeType `json:"type"`
-	Address    *string                          `json:"address,omitempty"`
-	SendStatus *string                          `json:"send_status,omitempty"`
-	EmailType  *string                          `json:"email_type,omitempty"`
+	Repeatable *bool `json:"repeatable,omitempty"`
+	HasPrimary *bool `json:"has_primary,omitempty"`
+	// Controls how updates to this attribute are handled. See the `EditMode`
+	// schema for the per-mode semantics. Defaults to `direct`.
+	//
+	EditMode *EditMode `default:"direct" json:"edit_mode"`
+	// Configuration for auto-clear matching on `edit_mode: external` attributes.
+	// `match_strategy` and `fuzzy_config` are only consulted for `external` mode —
+	// they are ignored for `approval` mode, which resolves via explicit
+	// `:apply` / `:dismiss` endpoints and never auto-clears.
+	//
+	EditModeConfig *EditModeConfig                  `json:"edit_mode_config,omitempty"`
+	Type           MessageEmailAddressAttributeType `json:"type"`
+	Address        *string                          `json:"address,omitempty"`
+	SendStatus     *string                          `json:"send_status,omitempty"`
+	EmailType      *string                          `json:"email_type,omitempty"`
 }
 
 func (m MessageEmailAddressAttribute) MarshalJSON() ([]byte, error) {
@@ -404,6 +414,20 @@ func (m *MessageEmailAddressAttribute) GetHasPrimary() *bool {
 		return nil
 	}
 	return m.HasPrimary
+}
+
+func (m *MessageEmailAddressAttribute) GetEditMode() *EditMode {
+	if m == nil {
+		return nil
+	}
+	return m.EditMode
+}
+
+func (m *MessageEmailAddressAttribute) GetEditModeConfig() *EditModeConfig {
+	if m == nil {
+		return nil
+	}
+	return m.EditModeConfig
 }
 
 func (m *MessageEmailAddressAttribute) GetType() MessageEmailAddressAttributeType {

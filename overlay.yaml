@@ -16,17 +16,24 @@ actions:
           - 5XX
         retryConnectionErrors: true
   # Environment Variables
-  - target: $["paths"]["/v1/journey/{journeyId}/datasources/{datasourceId}"]["get"]
+  - target: $["paths"]["/v1/journey/datasources/{compositeId}"]["get"]
     update:
       x-speakeasy-entity-operation: Datasource#get
-  - target: $["paths"]["/v1/journey/{journeyId}/datasources"]["post"]
+  - target: $["paths"]["/v1/journey/datasource"]["post"]
     update:
       x-speakeasy-entity-operation: Datasource#create,update
-  - target: $["paths"]["/v1/journey/{journeyId}/datasources/{datasourceId}"]["delete"]
-    update:
-      x-speakeasy-entity-operation: Datasource#delete
+
+
+  # # match parameters
+  # - target: $["paths"]["/v1/journey/datasources/{compositeId}"]["get"]["parameters"][0]
+  #   update:
+  #     x-speakeasy-match: compositeId
+
+  # delete is not needed for now
+  # - target: $["paths"]["/v1/journey/{journeyId}/datasources/{datasourceId}"]["delete"]
+  #   update:
+  #     x-speakeasy-entity-operation: Datasource#delete
 
   - target: $["components"]["schemas"]["Datasource"]
     update:
       x-speakeasy-entity: Datasource
-    
