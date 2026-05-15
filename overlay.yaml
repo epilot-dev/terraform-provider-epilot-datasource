@@ -24,11 +24,6 @@ actions:
       x-speakeasy-entity-operation: Datasource#create,update
 
 
-  # # match parameters
-  # - target: $["paths"]["/v1/journey/datasources/{compositeId}"]["get"]["parameters"][0]
-  #   update:
-  #     x-speakeasy-match: compositeId
-
   # delete is not needed for now
   # - target: $["paths"]["/v1/journey/{journeyId}/datasources/{datasourceId}"]["delete"]
   #   update:
