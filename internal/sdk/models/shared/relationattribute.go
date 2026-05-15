@@ -85,6 +85,29 @@ func (r *RelationAttributeInfoHelpers) GetHintTooltipPlacement() *string {
 	return r.HintTooltipPlacement
 }
 
+type RelationAttributeEditMode string
+
+const (
+	RelationAttributeEditModeListView RelationAttributeEditMode = "list-view"
+)
+
+func (e RelationAttributeEditMode) ToPointer() *RelationAttributeEditMode {
+	return &e
+}
+func (e *RelationAttributeEditMode) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "list-view":
+		*e = RelationAttributeEditMode(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for RelationAttributeEditMode: %v", v)
+	}
+}
+
 type RelationAttributeType string
 
 const (
@@ -158,29 +181,6 @@ func (e *RelationAffinityMode) UnmarshalJSON(data []byte) error {
 		return nil
 	default:
 		return fmt.Errorf("invalid value for RelationAffinityMode: %v", v)
-	}
-}
-
-type EditMode string
-
-const (
-	EditModeListView EditMode = "list-view"
-)
-
-func (e EditMode) ToPointer() *EditMode {
-	return &e
-}
-func (e *EditMode) UnmarshalJSON(data []byte) error {
-	var v string
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
-	}
-	switch v {
-	case "list-view":
-		*e = EditMode(v)
-		return nil
-	default:
-		return fmt.Errorf("invalid value for EditMode: %v", v)
 	}
 }
 
@@ -496,17 +496,23 @@ type RelationAttribute struct {
 	//
 	ExcludeFromSearch *bool `default:"false" json:"exclude_from_search"`
 	// Relations are always repeatables
-	Repeatable   *bool                 `default:"true" json:"repeatable"`
-	HasPrimary   *bool                 `json:"has_primary,omitempty"`
-	Type         RelationAttributeType `json:"type"`
-	RelationType *RelationType         `json:"relation_type,omitempty"`
+	Repeatable *bool                      `default:"true" json:"repeatable"`
+	HasPrimary *bool                      `json:"has_primary,omitempty"`
+	EditMode   *RelationAttributeEditMode `json:"edit_mode,omitempty"`
+	// Configuration for auto-clear matching on `edit_mode: external` attributes.
+	// `match_strategy` and `fuzzy_config` are only consulted for `external` mode —
+	// they are ignored for `approval` mode, which resolves via explicit
+	// `:apply` / `:dismiss` endpoints and never auto-clears.
+	//
+	EditModeConfig *EditModeConfig       `json:"edit_mode_config,omitempty"`
+	Type           RelationAttributeType `json:"type"`
+	RelationType   *RelationType         `json:"relation_type,omitempty"`
 	// Map of schema slug to target relation attribute
 	ReverseAttributes map[string]string `json:"reverse_attributes,omitempty"`
 	// Weak relation attributes are kept when duplicating an entity. Strong relation attributes are discarded when duplicating an entity.
 	RelationAffinityMode *RelationAffinityMode `json:"relation_affinity_mode,omitempty"`
 	// When enable_relation_picker is set to true the user will be able to pick existing relations as values. Otherwise, the user will need to create new relation to link.
-	EnableRelationPicker *bool     `default:"true" json:"enable_relation_picker"`
-	EditMode             *EditMode `json:"edit_mode,omitempty"`
+	EnableRelationPicker *bool `default:"true" json:"enable_relation_picker"`
 	// Enables the preview, edition, and creation of relation items on a Master-Details view mode.
 	DetailsViewModeEnabled *bool `default:"false" json:"details_view_mode_enabled"`
 	// Additional entity search filter for relation picker
@@ -751,6 +757,20 @@ func (r *RelationAttribute) GetHasPrimary() *bool {
 	return r.HasPrimary
 }
 
+func (r *RelationAttribute) GetEditMode() *RelationAttributeEditMode {
+	if r == nil {
+		return nil
+	}
+	return r.EditMode
+}
+
+func (r *RelationAttribute) GetEditModeConfig() *EditModeConfig {
+	if r == nil {
+		return nil
+	}
+	return r.EditModeConfig
+}
+
 func (r *RelationAttribute) GetType() RelationAttributeType {
 	if r == nil {
 		return RelationAttributeType("")
@@ -784,13 +804,6 @@ func (r *RelationAttribute) GetEnableRelationPicker() *bool {
 		return nil
 	}
 	return r.EnableRelationPicker
-}
-
-func (r *RelationAttribute) GetEditMode() *EditMode {
-	if r == nil {
-		return nil
-	}
-	return r.EditMode
 }
 
 func (r *RelationAttribute) GetDetailsViewModeEnabled() *bool {

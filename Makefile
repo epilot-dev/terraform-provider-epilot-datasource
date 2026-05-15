@@ -1,7 +1,7 @@
 .PHONY: all docs
 all: speakeasy docs
 
-original.yaml:
+original.yaml: openapi.yaml
 # curl https://docs.api.epilot.io/datasource.yaml > original.yaml
 	 cp openapi.yaml original.yaml
 
@@ -11,7 +11,7 @@ original_modified.yaml: original.yaml overlay.yaml
 overlay.yaml:
 	speakeasy overlay compare -s original.yaml -s original_modified.yaml > overlay.yaml
 
-speakeasy:
+speakeasy: original.yaml
 	$(eval TMP := $(shell mktemp -d))
 # curl https://docs.api.epilot.io/datasource.yaml > $(TMP)/openapi.yaml
 	cat original.yaml > $(TMP)/openapi.yaml

@@ -7,6 +7,10 @@ type Datasource struct {
 	Name string `json:"name"`
 	// ID of the datasource
 	ID *string `json:"id,omitempty"`
+	// Journey ID
+	JourneyID *string `json:"journeyId,omitempty"`
+	// Composite identifier in the form `journeyId:datasourceId`. Returned by GET responses and accepted by endpoints that look up a datasource by composite id.
+	CompositeID *string `json:"compositeId,omitempty"`
 	// Source identifier for the search
 	Source string `json:"source"`
 	// List of entity fields to include in search results
@@ -28,6 +32,20 @@ func (d *Datasource) GetID() *string {
 		return nil
 	}
 	return d.ID
+}
+
+func (d *Datasource) GetJourneyID() *string {
+	if d == nil {
+		return nil
+	}
+	return d.JourneyID
+}
+
+func (d *Datasource) GetCompositeID() *string {
+	if d == nil {
+		return nil
+	}
+	return d.CompositeID
 }
 
 func (d *Datasource) GetSource() string {

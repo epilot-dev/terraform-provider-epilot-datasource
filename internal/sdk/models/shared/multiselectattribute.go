@@ -293,9 +293,19 @@ type MultiSelectAttribute struct {
 	//
 	ExcludeFromSearch *bool `default:"false" json:"exclude_from_search"`
 	// The attribute is a repeatable
-	Repeatable *bool                    `json:"repeatable,omitempty"`
-	HasPrimary *bool                    `json:"has_primary,omitempty"`
-	Type       MultiSelectAttributeType `json:"type"`
+	Repeatable *bool `json:"repeatable,omitempty"`
+	HasPrimary *bool `json:"has_primary,omitempty"`
+	// Controls how updates to this attribute are handled. See the `EditMode`
+	// schema for the per-mode semantics. Defaults to `direct`.
+	//
+	EditMode *EditMode `default:"direct" json:"edit_mode"`
+	// Configuration for auto-clear matching on `edit_mode: external` attributes.
+	// `match_strategy` and `fuzzy_config` are only consulted for `external` mode —
+	// they are ignored for `approval` mode, which resolves via explicit
+	// `:apply` / `:dismiss` endpoints and never auto-clears.
+	//
+	EditModeConfig *EditModeConfig          `json:"edit_mode_config,omitempty"`
+	Type           MultiSelectAttributeType `json:"type"`
 	// controls if the matching of values against the options is case sensitive or not
 	DisableCaseSensitive *bool `json:"disable_case_sensitive,omitempty"`
 	// controls if the 360 ui will allow the user to enter a value which is not defined by the options
@@ -531,6 +541,20 @@ func (m *MultiSelectAttribute) GetHasPrimary() *bool {
 		return nil
 	}
 	return m.HasPrimary
+}
+
+func (m *MultiSelectAttribute) GetEditMode() *EditMode {
+	if m == nil {
+		return nil
+	}
+	return m.EditMode
+}
+
+func (m *MultiSelectAttribute) GetEditModeConfig() *EditModeConfig {
+	if m == nil {
+		return nil
+	}
+	return m.EditModeConfig
 }
 
 func (m *MultiSelectAttribute) GetType() MultiSelectAttributeType {

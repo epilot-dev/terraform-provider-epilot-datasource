@@ -10,6 +10,7 @@ import (
 	speakeasy_listvalidators "github.com/epilot-dev/terraform-provider-epilot-datasource/internal/validators/listvalidators"
 	speakeasy_stringvalidators "github.com/epilot-dev/terraform-provider-epilot-datasource/internal/validators/stringvalidators"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -33,14 +34,15 @@ type DatasourceResource struct {
 
 // DatasourceResourceModel describes the resource data model.
 type DatasourceResourceModel struct {
-	Fields    []types.String               `tfsdk:"fields"`
-	Filters   [][]tfTypes.DatasourceFilter `tfsdk:"filters"`
-	Group     *tfTypes.GroupParams         `tfsdk:"group"`
-	ID        types.String                 `tfsdk:"id"`
-	JourneyID types.String                 `tfsdk:"journey_id"`
-	Name      types.String                 `tfsdk:"name"`
-	Search    *tfTypes.SearchParams        `tfsdk:"search"`
-	Source    types.String                 `tfsdk:"source"`
+	CompositeID types.String                 `tfsdk:"composite_id"`
+	Fields      []types.String               `tfsdk:"fields"`
+	Filters     [][]tfTypes.DatasourceFilter `tfsdk:"filters"`
+	Group       *tfTypes.GroupParams         `tfsdk:"group"`
+	ID          types.String                 `tfsdk:"id"`
+	JourneyID   types.String                 `tfsdk:"journey_id"`
+	Name        types.String                 `tfsdk:"name"`
+	Search      *tfTypes.SearchParams        `tfsdk:"search"`
+	Source      types.String                 `tfsdk:"source"`
 }
 
 func (r *DatasourceResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -51,6 +53,11 @@ func (r *DatasourceResource) Schema(ctx context.Context, req resource.SchemaRequ
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Datasource Resource",
 		Attributes: map[string]schema.Attribute{
+			"composite_id": schema.StringAttribute{
+				Computed:    true,
+				Optional:    true,
+				Description: `Composite identifier in the form ` + "`" + `journeyId:datasourceId` + "`" + `. Returned by GET responses and accepted by endpoints that look up a datasource by composite id.`,
+			},
 			"fields": schema.ListAttribute{
 				Required:    true,
 				ElementType: types.StringType,
@@ -127,12 +134,12 @@ func (r *DatasourceResource) Schema(ctx context.Context, req resource.SchemaRequ
 				},
 			},
 			"id": schema.StringAttribute{
-				Computed:    true,
-				Optional:    true,
+				Required:    true,
 				Description: `ID of the datasource`,
 			},
 			"journey_id": schema.StringAttribute{
-				Required: true,
+				Required:    true,
+				Description: `Journey ID`,
 			},
 			"name": schema.StringAttribute{
 				Required:    true,
@@ -204,13 +211,13 @@ func (r *DatasourceResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	request, requestDiags := data.ToOperationsCreateOrUpdateJourneyDatasourceRequest(ctx)
+	request, requestDiags := data.ToSharedDatasourceUpsertRequest(ctx)
 	resp.Diagnostics.Append(requestDiags...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	res, err := r.client.ThreeHundredAndSixtyMinusNativeJourneys.CreateOrUpdateJourneyDatasource(ctx, *request)
+	res, err := r.client.ThreeHundredAndSixtyMinusNativeJourneys.UpsertJourneyDatasource(ctx, *request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
 		if res != nil && res.RawResponse != nil {
@@ -264,7 +271,41 @@ func (r *DatasourceResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	// Not Implemented; we rely entirely on CREATE API request response
+	request, requestDiags := data.ToOperationsGetJourneyDatasourceByCompositeIDRequest(ctx)
+	resp.Diagnostics.Append(requestDiags...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	res, err := r.client.ThreeHundredAndSixtyMinusNativeJourneys.GetJourneyDatasourceByCompositeID(ctx, *request)
+	if err != nil {
+		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res != nil && res.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res.RawResponse))
+		}
+		return
+	}
+	if res == nil {
+		resp.Diagnostics.AddError("unexpected response from API", fmt.Sprintf("%v", res))
+		return
+	}
+	if res.StatusCode == 404 {
+		resp.State.RemoveResource(ctx)
+		return
+	}
+	if res.StatusCode != 200 {
+		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res.StatusCode), debugResponse(res.RawResponse))
+		return
+	}
+	if !(res.Datasource != nil) {
+		resp.Diagnostics.AddError("unexpected response from API. Got an unexpected response body", debugResponse(res.RawResponse))
+		return
+	}
+	resp.Diagnostics.Append(data.RefreshFromSharedDatasource(ctx, res.Datasource)...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -284,13 +325,13 @@ func (r *DatasourceResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	request, requestDiags := data.ToOperationsCreateOrUpdateJourneyDatasourceRequest(ctx)
+	request, requestDiags := data.ToSharedDatasourceUpsertRequest(ctx)
 	resp.Diagnostics.Append(requestDiags...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	res, err := r.client.ThreeHundredAndSixtyMinusNativeJourneys.CreateOrUpdateJourneyDatasource(ctx, *request)
+	res, err := r.client.ThreeHundredAndSixtyMinusNativeJourneys.UpsertJourneyDatasource(ctx, *request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
 		if res != nil && res.RawResponse != nil {
@@ -348,5 +389,5 @@ func (r *DatasourceResource) Delete(ctx context.Context, req resource.DeleteRequ
 }
 
 func (r *DatasourceResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resp.Diagnostics.AddError("Not Implemented", "No available import state operation is available for resource datasource.")
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("composite_id"), req.ID)...)
 }

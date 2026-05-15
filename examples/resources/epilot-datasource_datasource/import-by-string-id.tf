@@ -1,0 +1,18 @@
+# import {
+#   to = epilot-datasource_datasource.my_epilot-datasource_datasource
+#   id = "d0b9b410-2390-11f1-88e6-6f0c2d622d6f:40c1a964-b098-4c6d-acf6-fb35ea759227"
+# }
+
+terraform {
+  required_providers {
+    epilot-datasource = {
+      source  = "epilot-dev/epilot-datasource"
+      version = "0.31.1"
+    }
+  }
+}
+
+provider "epilot-datasource" {
+  epilot_auth = "eyJraWQiOiJyd1wvSUdNeXJIU1wvV1wvMHlkOWoyT3Z6eURxTDEwM1RCUUNaUkVBejVMSUpBPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI3YmNjMzE2Ni03YmRhLTRmN2EtOTdjZi1mYjgxODAxYjUzNWUiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LWNlbnRyYWwtMS5hbWF6b25hd3MuY29tXC9ldS1jZW50cmFsLTFfNGh3VXlSWkVCIiwiY3VzdG9tOml2eV9vcmdfaWQiOiI3MzkyMjQiLCJjb2duaXRvOnVzZXJuYW1lIjoibi5nb2VsQGVwaWxvdC5jbG91ZCIsImN1c3RvbTppdnlfdXNlcl9pZCI6IjExMDAwMDM3IiwiYXVkIjoiNDdwcjdzdDdsNHVtYm1wZmJpanY2N21odWEiLCJldmVudF9pZCI6IjAyODAxMDA1LWQxOGEtNDlhOC1hMTQ3LWFhMDZhMmZhYmRjZiIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNzc4ODM3MzgyLCJleHAiOjE3Nzg4NDcwNzEsImlhdCI6MTc3ODg0MzQ3MSwiZW1haWwiOiJuLmdvZWxAZXBpbG90LmNsb3VkIn0.pjwKkIZcqoZCgagUn-EzjKodvWwBl4kKNiyVvxMLgmR87_ANZ8MG2iynljsXvun1e8BlEkQoDi7NGS3c69VlvwVU40_ux6HCUanvIKXY5XIDEl7iKIBCFABQzXgKqeJhX-ykCWxzDS3dDRLjoMjZJFYkZ36ToW03wutkHx99fjvQGLY1at9heGzg6CpIlXdUfzjiKRJX_4Tx7QxBAAMmplEWnb3joxtb0l4MZv5G2tS-FezaiRzKDMXzdv1rf_rOeM7rPtW2sB1e3JVCV94BXXoDcW2dVMYHji0ihA3RsqD4gXnieReUlKNiAet9hTSHXCD0_4M0Ox1Y1tFlm1wgyA"
+  server_url = "https://epilot360-native-journeys.dev.sls.epilot.io"
+}

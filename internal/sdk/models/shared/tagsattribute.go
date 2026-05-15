@@ -170,11 +170,21 @@ type TagsAttribute struct {
 	//
 	ExcludeFromSearch *bool `default:"false" json:"exclude_from_search"`
 	// The attribute is a repeatable
-	Repeatable  *bool             `json:"repeatable,omitempty"`
-	HasPrimary  *bool             `json:"has_primary,omitempty"`
-	Type        TagsAttributeType `json:"type"`
-	Options     []string          `json:"options,omitempty"`
-	Suggestions []string          `json:"suggestions,omitempty"`
+	Repeatable *bool `json:"repeatable,omitempty"`
+	HasPrimary *bool `json:"has_primary,omitempty"`
+	// Controls how updates to this attribute are handled. See the `EditMode`
+	// schema for the per-mode semantics. Defaults to `direct`.
+	//
+	EditMode *EditMode `default:"direct" json:"edit_mode"`
+	// Configuration for auto-clear matching on `edit_mode: external` attributes.
+	// `match_strategy` and `fuzzy_config` are only consulted for `external` mode —
+	// they are ignored for `approval` mode, which resolves via explicit
+	// `:apply` / `:dismiss` endpoints and never auto-clears.
+	//
+	EditModeConfig *EditModeConfig   `json:"edit_mode_config,omitempty"`
+	Type           TagsAttributeType `json:"type"`
+	Options        []string          `json:"options,omitempty"`
+	Suggestions    []string          `json:"suggestions,omitempty"`
 }
 
 func (t TagsAttribute) MarshalJSON() ([]byte, error) {
@@ -403,6 +413,20 @@ func (t *TagsAttribute) GetHasPrimary() *bool {
 		return nil
 	}
 	return t.HasPrimary
+}
+
+func (t *TagsAttribute) GetEditMode() *EditMode {
+	if t == nil {
+		return nil
+	}
+	return t.EditMode
+}
+
+func (t *TagsAttribute) GetEditModeConfig() *EditModeConfig {
+	if t == nil {
+		return nil
+	}
+	return t.EditModeConfig
 }
 
 func (t *TagsAttribute) GetType() TagsAttributeType {

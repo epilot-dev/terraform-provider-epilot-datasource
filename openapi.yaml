@@ -3,14 +3,15 @@ info:
   title: 360-native-journeys API
   description: API to configure 360-native-journeys
   version: 1.0.0
+servers:
+  - url: https://epilot360-native-journeys.sls.epilot.io
 security:
   - EpilotAuth: []
   - PortalAuth: []
 tags:
   - name: 360-native-journeys
     description: 360-native-journeys operations
-servers:
-  - url: https://epilot360-native-journeys.sls.epilot.io
+
 x-tagGroups:
   - name: APIs
     tags:
@@ -289,6 +290,100 @@ paths:
                   message:
                     type: string
                     example: Forbidden
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: datasource not found
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unknown API Error
+
+  "/v1/journey/datasource":
+    post:
+      operationId: upsertJourneyDatasource
+      summary: upsertJourneyDatasource
+      description: |
+        Create or update a datasource by providing both journeyId and id in the request body.
+        Intended for blueprint flows where the journey and datasource IDs are known upfront.
+      tags:
+        - 360-native-journeys
+      security:
+        - EpilotAuth: []
+        - PortalAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasourceUpsertRequest"
+      responses:
+        200:
+          description: The datasource has been created or updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Datasource"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: datasource not found
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unknown API Error
+
+  "/v1/journey/datasources/{compositeId}":
+    get:
+      operationId: getJourneyDatasourceByCompositeId
+      summary: getJourneyDatasourceByCompositeId
+      description: |
+        Get a single datasource using a composite identifier (`journeyId:datasourceId`) in the path.
+        Intended for blueprint flows where the journey and datasource IDs are known upfront.
+      parameters:
+        - name: compositeId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "123e4567-e89b-12d3-a456-426614174000:123e4567-e89b-12d3-a456-426614174000"
+            description: Composite identifier in the form `journeyId:datasourceId`
+      tags:
+        - 360-native-journeys
+      security:
+        - EpilotAuth: []
+        - PortalAuth: []
+      responses:
+        200:
+          description: The datasource has been retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Datasource"
         404:
           description: Not found
           content:
@@ -670,6 +765,15 @@ components:
           description: ID of the datasource
           format: uuid
           example: "123e4567-e89b-12d3-a456-426614174000"
+        journeyId:
+          type: string
+          description: Journey ID
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        compositeId:
+          type: string
+          description: Composite identifier in the form `journeyId:datasourceId`. Returned by GET responses and accepted by endpoints that look up a datasource by composite id.
+          example: "123e4567-e89b-12d3-a456-426614174000:123e4567-e89b-12d3-a456-426614174000"
         source:
           type: string
           description: Source identifier for the search
@@ -692,7 +796,16 @@ components:
         search:
           $ref: "#/components/schemas/SearchParams"
         group:
-          $ref: "#/components/schemas/GroupParams"      
+          $ref: "#/components/schemas/GroupParams"
+
+    DatasourceUpsertRequest:
+      description: Request body for upserting a datasource when both journeyId and id are known upfront (blueprint flows).
+      allOf:
+        - $ref: "#/components/schemas/Datasource"
+        - type: object
+          required:
+            - journeyId
+            - id
 
     DatasourceFilter:
       oneOf:

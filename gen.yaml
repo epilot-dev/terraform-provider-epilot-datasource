@@ -47,7 +47,7 @@ go:
   outputModelSuffix: output
   packageName: openapi
 terraform:
-  version: 0.30.4
+  version: 0.31.1
   additionalActions: []
   additionalDataSources: []
   additionalDependencies: {}
@@ -69,6 +69,7 @@ terraform:
   enableTypeDeduplication: true
   environmentVariables: []
   excludeEmptyObjectSchemas: false
+  forwardCompatibleEnumsByDefault: false
   imports:
     option: openapi
     paths:
@@ -83,6 +84,7 @@ terraform:
   outputModelSuffix: output
   packageName: epilot-datasource
   preApplyUnionDiscriminators: false
+  providerTypeNameOverride: ""
   respectRequiredFields: false
   respectTitlesForPrimitiveUnionMembers: false
   unionStrategy: populated-fields
